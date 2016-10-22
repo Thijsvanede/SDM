@@ -11,6 +11,12 @@ The project has the following global structure:
  - **server**: Directory containing all server directories and files.
  - **client**: Directory containing all client directories and files.
 
+### Server
+All files necessary to run the server, including custom node modules.
+
+### Client
+All files to run the client side of the applications including HTML to be send back to the client.
+
 ## Starting the project
 The project can be started by running the Makefile using the following command from the workspace directory:
 ```
