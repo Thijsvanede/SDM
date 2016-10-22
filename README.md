@@ -4,6 +4,12 @@ This README.md file explains how to use the Encrypted Data Search server.
 ## Requirements
 The project requires [Python](https://www.python.org/download/releases/2.7/), [NodeJS](https://nodejs.org/en/) to be installed as well as [MongoDB](https://www.mongodb.com/). If you run Ubuntu 14.04 just execute the command ``` $ make install ``` to install these dependencies.
 
+## Project structure
+The project has the following global structure:
+ - bash_scripts: Scripts to quickly start, stop, test or commit the project.
+ - html: The html code for displaying web pages
+ - node_modules: The node modules used to run the node server
+
 ## Starting the project
 The project can be started by running the Makefile using the following command from the workspace directory:
 ```
