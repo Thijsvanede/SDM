@@ -1,9 +1,10 @@
-REPORTER = spec
+all: start
 
-all: init test
-
-init:
-	echo called init
+start:
+	./bash_scripts/start.sh
 
 test:
-	echo No tests to be executed
+	./bash_scripts/test.sh
+	
+stop:
+	./bash_scripts/stop.sh
