@@ -2,7 +2,7 @@
 This README.md file explains how to use the Encrypted Data Search server.
 
 ## Requirements
-The project requires NodeJS to be installed as well as MongoDB.
+The project requires [NodeJS](https://nodejs.org/en/) to be installed as well as [MongoDB](https://www.mongodb.com/).
 
 ## Starting the project
 The project can be started by running the Makefile using the following command from the workspace directory:
