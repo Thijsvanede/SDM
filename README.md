@@ -6,7 +6,15 @@ The project requires NodeJS to be installed as well as MongoDB.
 
 ## Starting the project
 The project can be started by running the Makefile using the following command from the workspace directory:
-``` $ make```
+```
+$ make
+```
+The make file currently has four options:
+1. ``` $ make ``` to start the node server and database.
+2. ``` $ make stop ``` to stop the database.
+3. ``` $ make test ``` to test the server.
+4. ``` $ make git ``` to automatically commit to the git repository.
+
 More information on how to start the individual elements of the server can be found below.
 
 ### Starting node server
