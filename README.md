@@ -10,7 +10,7 @@ The project can be started by running the Makefile using the following command f
 $ make
 ```
 The make file currently has four options:
- 1. ``` $ make ``` to start the node server and database.
+ 1. ``` $ make ``` or ``` $ make start``` to start the node server and database.
  2. ``` $ make stop ``` to stop the database.
  3. ``` $ make test ``` to test the server.
  4. ``` $ make git ``` to automatically commit to the git repository.
