@@ -1,6 +1,9 @@
 # Encrypted Data Search
 This README.md file explains how to use the Encrypted Data Search server.
 
+## Requirements
+The project requires NodeJS to be installed as well as MongoDB.
+
 ## Starting the project
 The project can be started by running the Makefile using the following command from the workspace directory:
 ``` $ make```
@@ -21,7 +24,7 @@ Section explaining how to handle the MongoDB database.
 
 ### Control MongoDB
 ``` 
-    $ mongo       //Open database
-    $ show dbs    //Show databases
-    $ use <dbs>   //Select databases
+$ mongo       //Open database
+$ show dbs    //Show databases
+$ use <dbs>   //Select databases
 ```

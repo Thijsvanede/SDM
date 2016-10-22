@@ -8,3 +8,6 @@ test:
 	
 stop:
 	./bash_scripts/stop.sh
+	
+git:
+	./bash_scripts/git.sh
