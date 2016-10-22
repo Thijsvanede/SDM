@@ -50,3 +50,11 @@ $ mongo       //Open database
 $ show dbs    //Show databases
 $ use <dbs>   //Select databases
 ```
+
+## Server API
+The functions provided by the Encrypted Data Search server.
+
+### database/database.js
+This contains functions to easily interact with the database. Currently supported functionality:
+ - **insertDocument( *collection, document* )**: To insert document into collection.
+ - **find( *collection, query, callback* )**: To find query in collection and export it to callback function.
