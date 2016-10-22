@@ -1,3 +1,6 @@
+# Current tasks
+ - Complete database connection methods.
+
 # Encrypted Data Search
 This README.md file explains how to use the Encrypted Data Search server.
 

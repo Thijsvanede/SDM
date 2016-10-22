@@ -41,24 +41,9 @@ app.use('/', function(req, res) {
 /**              Database connection             **/
 /**************************************************/
 
-/* URL to initiate connection with database. */
-var databaseURL = 'mongodb://0.0.0.0:27017/SDM';
-
-/* Connecting to database server. */
-MongoClient.connect(databaseURL, function(err, db){
-  assert.equal(null, err);
-  console.log("Successfully connected to database.");
-  db.close();
-});
-
-/**************************************************/
-/**                  Server API                  **/
-/**************************************************/
-//TODO
 
 
-
-
+//Currently for testing purposes
 var MongoDBCon   = require('./server/database/database.js').MongoDBCon;
 var c = new MongoDBCon();
 c.insertDocument('restaurants', {
@@ -87,8 +72,14 @@ c.insertDocument('restaurants', {
    });
 
 c.find('restaurants', {"grades.grade": "B"}, function(doc){
-  console.log(doc);
+  console.log("Found:", doc);
+  console.log("End.");
 });
+
+/**************************************************/
+/**                  Server API                  **/
+/**************************************************/
+//TODO
 
 
 /**************************************************/

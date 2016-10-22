@@ -28,14 +28,9 @@ var _insertDoc = function(db, collection, document, callback) {
  * Private method to query database.
  */
 var _find = function(db, collection, query, callback) {
-  var cursor = db.collection(collection).find(query);
-  cursor.each(function(err, doc){
+  var cursor = db.collection(collection).find(query).toArray(function (err, docs){
     assert.equal(err, null);
-    if(doc != null){
-      callback(doc);
-    }else {
-      callback();
-    }
+    callback(docs);
   });
 };
 
