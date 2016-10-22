@@ -11,3 +11,6 @@ stop:
 	
 git:
 	./bash_scripts/git.sh
+	
+install:
+	./bash_scripts/install.sh

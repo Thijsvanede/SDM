@@ -2,18 +2,19 @@
 This README.md file explains how to use the Encrypted Data Search server.
 
 ## Requirements
-The project requires [NodeJS](https://nodejs.org/en/) to be installed as well as [MongoDB](https://www.mongodb.com/).
+The project requires [NodeJS](https://nodejs.org/en/) to be installed as well as [MongoDB](https://www.mongodb.com/). If you run Ubuntu 14.04 just execute the command ``` $ make install ``` to install these dependencies.
 
 ## Starting the project
 The project can be started by running the Makefile using the following command from the workspace directory:
 ```
 $ make
 ```
-The make file currently has four options:
+The make file currently has the following options:
  1. ``` $ make ``` or ``` $ make start``` to start the node server and database.
  2. ``` $ make stop ``` to stop the database.
  3. ``` $ make test ``` to test the server.
  4. ``` $ make git ``` to automatically commit to the git repository.
+ 5. ``` $ make install ``` to automatically install the required [NodeJS](https://nodejs.org/en/) and [MongoDB](https://www.mongodb.com/) and subsequent packages. Note this is the installation for Ubuntu 14.04.
 
 More information on how to start the individual elements of the server can be found below.
 
