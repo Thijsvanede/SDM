@@ -11,7 +11,12 @@ echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" 
 sudo apt-get update
 sudo apt-get install -y mongodb-org
 
+# Installing Python
+sudo apt-get update
+sudo apt-get install python2.7
+
 # Installing Node JS drivers
 npm install express
 npm install body-parser
 npm install ejs
+npm install mongodb --save
