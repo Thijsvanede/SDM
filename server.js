@@ -34,7 +34,7 @@ app.use(express.static(__dirname + '/public'));
 
 /** Initialising home page to index.html */
 app.use('/', function(req, res) {
-  res.render('./html/index.html');
+  res.render('./client/html/index.html');
 });
 
 /**************************************************/

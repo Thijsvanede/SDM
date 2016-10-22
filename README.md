@@ -6,9 +6,10 @@ The project requires [Python](https://www.python.org/download/releases/2.7/), [N
 
 ## Project structure
 The project has the following global structure:
- - bash_scripts: Scripts to quickly start, stop, test or commit the project.
- - html: The html code for displaying web pages
- - node_modules: The node modules used to run the node server
+ - **bash_scripts**: Scripts to quickly start, stop, test or commit the project.
+ - **node_modules**: The node modules used to run the node server
+ - **server**: Directory containing all server directories and files.
+ - **client**: Directory containing all client directories and files.
 
 ## Starting the project
 The project can be started by running the Makefile using the following command from the workspace directory:
