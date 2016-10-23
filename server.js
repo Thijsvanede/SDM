@@ -40,38 +40,21 @@ app.use('/', function(req, res) {
 /**************************************************/
 /**              Database connection             **/
 /**************************************************/
-
-
-
-//Currently for testing purposes
 var MongoDBCon   = require('./server/database/database.js').MongoDBCon;
-var c = new MongoDBCon();
-c.insertDocument('restaurants', {
-      "address" : {
-         "street" : "2 Avenue",
-         "zipcode" : "10075",
-         "building" : "1480",
-         "coord" : [ -73.9557413, 40.7720266 ]
-      },
-      "borough" : "Manhattan",
-      "cuisine" : "Italian",
-      "grades" : [
-         {
-            "date" : new Date("2014-10-01T00:00:00Z"),
-            "grade" : "A",
-            "score" : 11
-         },
-         {
-            "date" : new Date("2014-01-16T00:00:00Z"),
-            "grade" : "B",
-            "score" : 17
-         }
-      ],
-      "name" : "Vella",
-      "restaurant_id" : "41704620"
-   });
 
-c.find('restaurants', {"grades.grade": "B"}, function(doc){
+// Currently for testing purposes
+var database = new MongoDBCon();
+
+database.bulkWrite('temp', [
+      { insertOne: { document: { a: 1 } } }
+    , { updateOne: { filter: {a:2}, update: {$set: {a:2}}, upsert:true } }
+    , { updateMany: { filter: {a:2}, update: {$set: {a:2}}, upsert:true } }
+    , { deleteOne: { filter: {c:1} } }
+    , { deleteMany: { filter: {c:1} } }
+    , { replaceOne: { filter: {c:3}, replacement: {c:4}, upsert:true}}],
+                  {ordered:true, w:1});
+
+database.find('temp', {}, function(doc){
   console.log("Found:", doc);
   console.log("End.");
 });

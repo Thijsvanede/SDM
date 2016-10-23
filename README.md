@@ -59,5 +59,9 @@ The functions provided by the Encrypted Data Search server.
 
 ### database/database.js
 This contains functions to easily interact with the database. Currently supported functionality:
- - **insertDocument( *collection, document* )**: To insert document into collection.
+ - **insert( *collection, document, options* )**: To insert document(s) into collection.
+ - **update( *collection, document, update, options* )**: To update documents from collection.
+ - **delete( *collection, document, options* )**: To delete a single document from collection.
+ - **deleteAll( *collection, document, options* )**: To delete all documents from collection.
+ - **bulkWrite( *collection, operations, options* )**: To perform bulk of operations on collection.
  - **find( *collection, query, callback* )**: To find query in collection and export it to callback function.
