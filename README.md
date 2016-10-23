@@ -25,7 +25,9 @@ The project can be started by running the Makefile using the following command f
 ```
 $ make
 ```
-The make file currently has the following options:
+Once the server runs use this [link](https://Encrypted-Data-Search-thijsvanede512475.codeanyapp.com) to access the server. 
+
+The make file currently also has the following options:
  1. ``` $ make ``` or ``` $ make start``` to start the node server and database.
  2. ``` $ make stop ``` to stop the database.
  3. ``` $ make test ``` to test the server.

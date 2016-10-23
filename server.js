@@ -42,22 +42,8 @@ app.use('/', function(req, res) {
 /**************************************************/
 var MongoDBCon   = require('./server/database/database.js').MongoDBCon;
 
-// Currently for testing purposes
+// Open database connection.
 var database = new MongoDBCon();
-
-database.bulkWrite('temp', [
-      { insertOne: { document: { a: 1 } } }
-    , { updateOne: { filter: {a:2}, update: {$set: {a:2}}, upsert:true } }
-    , { updateMany: { filter: {a:2}, update: {$set: {a:2}}, upsert:true } }
-    , { deleteOne: { filter: {c:1} } }
-    , { deleteMany: { filter: {c:1} } }
-    , { replaceOne: { filter: {c:3}, replacement: {c:4}, upsert:true}}],
-                  {ordered:true, w:1});
-
-database.find('temp', {}, function(doc){
-  console.log("Found:", doc);
-  console.log("End.");
-});
 
 /**************************************************/
 /**                  Server API                  **/
