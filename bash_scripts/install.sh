@@ -20,3 +20,9 @@ npm install express
 npm install body-parser
 npm install ejs
 npm install mongodb --save
+
+# Installing Crypto Libraries
+npm install crypto
+npm install homomorphicjs
+npm install node-rsa
+npm install random-gen

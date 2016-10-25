@@ -18,10 +18,14 @@ var assert       = require('assert');
 
 var app          = express();
 
+
 /**************************************************/
 /**             Server initialisation            **/
 /**************************************************/
 var server       = http.Server(app);
+
+// parse JSON bodies
+app.use(bodyParser.json())
 
 /**************************************************/
 /**          View engine initialisation          **/
@@ -33,7 +37,7 @@ app.engine('html', require('ejs').renderFile);
 app.use(express.static(__dirname + '/public'));
 
 /** Initialising home page to index.html */
-app.use('/', function(req, res) {
+app.get('/', function(req, res) {
   res.render('./client/html/index.html');
 });
 
@@ -48,7 +52,37 @@ var database = new MongoDBCon();
 /**************************************************/
 /**                  Server API                  **/
 /**************************************************/
-//TODO
+//var API = require('./server/modules/Henk.js').Henk;
+//var api = new API();
+
+
+app.get('/api/', function(req, res){
+  //TODO maybe documentation page about the API?
+});
+
+app.use('/api/sysset/', function(req, res) {
+  console.log(req);
+  console.log('body: ' + req.body);
+  console.log('a: ' + req.body.a);
+  res.send('done');
+  // get PK_s
+  // api.SysSet(PK_s)
+});
+app.post('/api/grpaut/', function(req, res) {
+  // get groupID, STC
+  // api.GrpAut(groupID, STC)
+})
+app.post('/api/datupl/', function(req, res) {
+  // get S_g(R), CSI_R
+  // api.DatUpl(S_g(R),CSI_R)
+})
+app.post('/api/search/', function(req, res) {
+  // get trapdoor (L',l), PIN (d_i), secure code (s_i)
+  // api.MemChk(d_i,s_i,STC)
+  // -> api.SrhInd(T_L, CSI_R)
+  // -> return api.DatDwn()
+})
+
 
 
 /**************************************************/

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-echo "Currently no tests are executed"
+# Start the node server
+node test.js
