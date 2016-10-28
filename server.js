@@ -16,13 +16,23 @@ var bodyParser   = require('body-parser');
 var MongoClient  = require('mongodb').MongoClient;
 var assert       = require('assert');
 
+var passport = require('passport')
+  , LocalStrategy = require('passport-local').Strategy;
+
 var app          = express();
+
 
 
 /**************************************************/
 /**             Server initialisation            **/
 /**************************************************/
 var server       = http.Server(app);
+
+/**************************************************/
+/**             Socket IO initialisation         **/
+/**************************************************/
+
+var io = require('socket.io')(server);
 
 // parse JSON bodies
 app.use(bodyParser.json())
@@ -41,6 +51,10 @@ app.get('/', function(req, res) {
   res.render('./client/html/index.html');
 });
 
+app.get('/login', function(req, res) {
+  res.render('./client/html/login.html');
+});
+
 /**************************************************/
 /**              Database connection             **/
 /**************************************************/
@@ -48,6 +62,8 @@ var MongoDBCon   = require('./server/database/database.js').MongoDBCon;
 
 // Open database connection.
 var database = new MongoDBCon();
+
+
 
 /**************************************************/
 /**                  Server API                  **/
@@ -90,3 +106,44 @@ app.post('/api/search/', function(req, res) {
 /**************************************************/
 console.log("Starting server at " + SERVER_IP + ":" + SERVER_PORT);
 server.listen(SERVER_PORT, SERVER_IP);
+
+
+/**************************************************/
+/**            Socket IO Communication           **/
+/**************************************************/
+
+io.on('connection', function(socket){
+  console.log("a client connected");
+  socket.on('disconnect', function(){
+    console.log("A client disconnected");
+  })
+});
+
+/**************************************************/
+/**            Passport                          **/
+/**************************************************/
+
+console.log(database.Users.find().prettyPrint());
+
+app.post('/login',
+  passport.authenticate('local', { successRedirect: '/',
+                                   failureRedirect: '/login',
+                                   failureFlash: false })
+);
+
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    database.Users.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
+

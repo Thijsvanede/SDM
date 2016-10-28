@@ -51,6 +51,7 @@ Section explaining how to handle the MongoDB database.
 $ mongo       //Open database
 $ show dbs    //Show databases
 $ use <dbs>   //Select databases
+$ db.<collection>.find().pretty() //Print selected collection
 ```
 
 ## Server API

@@ -26,3 +26,4 @@ npm install crypto
 npm install homomorphicjs
 npm install node-rsa
 npm install random-gen
+npm install node-forge
