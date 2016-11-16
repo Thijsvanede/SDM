@@ -1,14 +1,27 @@
-var Thijs = require('./server/modules/Thijs.js').Thijs;
-var Henk = require('./server/modules/Henk.js').Henk;
+var bigInt = require('big-integer');
 
-var myThijs = new Thijs();
-var myHenk = new Henk();
+var Init = require('./server/modules/Init.js').Init;
+var Server = require('./server/modules/Server.js').Server;
+var Client = require('./server/modules/DeEkteClient.js').Client;
+var GM = require('./server/modules/GM.js').GM;
 
-myHenk.SysSet(512, function(){
-  console.log("Finished setting up.");
+// Name, address, tel
+var R = [bigInt(5), bigInt(10), bigInt(20)];
+var L = [bigInt(20)];
+var l = [3]; //locations start at index 1
+
+var myServer = new Server();
+var myClients = [new Client(1, myServer), new Client(2, myServer)];
+var myGM = new GM(myServer, myClients, 512);
+
+myGM.GrpAuth(function(){
+  console.log("Group authenticated.");
 });
 
-myHenk.GrpAuth([1,2,3,4], function(data){
-  console.log(data);
-  console.log("Finished GrpAuth.");
+myClients[0].UploadData(R, function(){
+  console.log("Data uploaded.");
+});
+
+myClients[0].sendTrpdor(L, l, function(){
+  console.log("Trapdoor sent.");
 });

@@ -1,0 +1,93 @@
+<html>
+  <head>
+    <% include ../partials/head %>
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Encrypted Data Search</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li id="upl-link"><a>Upload</a></li>
+            <li id="srch-link"><a>Search</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><p class="navbar-text">Logged in as <%= user.username %></p></li>
+            <li><a href="/logout">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <% include ../partials/alerts %>
+    
+    
+    <div class="container">
+      <div id="upload">
+        <h1>Upload document</h1>
+        <form id="uploadform">
+          <div class="control-group">
+            <label for="field1">Field 1:</label>
+            <input class="form-control" type="text" name="field1"/>
+          </div>
+          <div class="control-group">
+            <label for="field2">Field 2:</label>
+            <input class="form-control" type="text" name="field2"/>
+          </div>
+          <div class="control-group">
+            <label for="field3">Field 3:</label>
+            <input class="form-control" type="text" name="field3"/>
+          </div>
+          <div class="control-group">
+            <label for="field4">Field 4:</label>
+            <input class="form-control" type="text" name="field4"/>
+          </div>
+          <div class="control-group">
+            <label for="field5">Field 5:</label>
+            <input class="form-control" type="text" name="field5"/>
+          </div>
+          <div class="control-group">
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </div>
+        </form>
+      </div>
+      
+      <div id="search" style="display: none;">
+        <h1>Search documents</h1>
+        <form id="searchform">
+          <div class="control-group">
+            <label for="field1">Field 1:</label>
+            <input class="form-control" type="text" name="field1"/>
+          </div>
+          <div class="control-group">
+            <label for="field2">Field 2:</label>
+            <input class="form-control" type="text" name="field2"/>
+          </div>
+          <div class="control-group">
+            <label for="field3">Field 3:</label>
+            <input class="form-control" type="text" name="field3"/>
+          </div>
+          <div class="control-group">
+            <label for="field4">Field 4:</label>
+            <input class="form-control" type="text" name="field4"/>
+          </div>
+          <div class="control-group">
+            <label for="field5">Field 5:</label>
+            <input class="form-control" type="text" name="field5"/>
+          </div>
+          <div class="control-group">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
+        </form>
+      </div>
+      <div id="result" style="display: none;">
+        <div class="row">
+          <div class="loading col-md-2 col-md-offset-5">
+            <span class="glyphicon glyphicon-refresh spinning"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
