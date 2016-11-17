@@ -63,7 +63,7 @@ GM.prototype.f = function(x) {
  * Generate u function.
  */
 GM.prototype.genu = function(){
-  return bigInt(Math.floor(Math.random() * 100000)).modPow(2,bigInt(this.n));
+  return bigInt(Math.floor(Math.random() * 100000) + 2).modPow(2, bigInt(this.n));
 }
 
 /**
@@ -92,22 +92,25 @@ GM.prototype.s = function(){
 /**************************************************/
 GM.prototype.SysSet = function(k, callback) {
   this.k = k;
-  var key = new NodeRSA({b: k});
-  components = key.exportKey('components');
-  this.p = components.p;
-  this.q = components.q;
-  this.n = bigInt(components.n.toString('hex'), 16);
-  this.u = this.genu();
+//   var key = new NodeRSA({b: k});
+//   components = key.exportKey('components');
+//   this.p = components.p;
+//   this.q = components.q;
+//   this.n = bigInt(components.n.toString('hex'), 16);
   
   //paillier
-  var pkeys = paillier.generateKeys(100);
+  var pkeys = paillier.generateKeys(k);
   var public = pkeys.pub;
   var priv = pkeys.sec;
+	this.p = pkeys.p;
+	this.q = pkeys.q;
+	this.n = public.n;
+	
   var sigma = bigInt(Math.floor((Math.random() * 100000000) + 2)); 
   var lmb = priv.lambda;
   var beta = sigma.multiply(lmb).mod(public.n2);
-  var lfunc = public.np1.modPow(priv.lambda, public.n2).subtract(bigInt.one).divide(public.n);
-  var gamma = sigma.multiply(lfunc).mod(public.n);
+	var lfunc = public.np1.modPow(priv.lambda, public.n2).subtract(bigInt.one).divide(public.n);	
+	var gamma = sigma.multiply(lfunc).mod(public.n);
   
   //blind signatures 
   var s = this.s();
@@ -115,13 +118,16 @@ GM.prototype.SysSet = function(k, callback) {
   var s1 = s[0];
   //rsa tuple [d,n]
   var s2 = s[1];
+	
+	// Generate parameter u.
+  this.u = this.genu();
   
 	// Publish PKg
 	this.g = public.np1;
 	this.gamma = gamma;
 	this.P = bigInt.randBetween(0, this.n); //TODO Make actual group generator
-	this.Sg = s1[0];
-	this.publishPKg(this.g, this.gamma, {u: this.u}, this.P, this.n, this.Sg, function(){});
+	this.Sg = s1;
+	this.publishPKg(this.receiveSgR, this.g, this.gamma, {u: this.u}, this.P, this.n, this.Sg, function(){});
 	
 	// Publish PKs
 	this.beta = beta;
@@ -130,7 +136,7 @@ GM.prototype.SysSet = function(k, callback) {
 	// Store SK
 	this.sigma = sigma;
 	this.lambda = lmb;
-	this.SgPrime = s1[1];
+	this.SgPrime = s2;
   callback();
 }
 
@@ -163,6 +169,8 @@ paillier = {
 		keys.pub = new paillier.publicKey(modulusbits,n);
 		lambda = bigInt.lcm(p.subtract(bigInt.one),q.subtract(bigInt.one));
 		keys.sec = new paillier.privateKey(lambda, keys.pub);
+		keys.p = p;
+		keys.q = q;
 		return keys;
 	}
 }
@@ -233,10 +241,10 @@ GM.prototype.GrpAuth = function(callback) {
 /**
  * Publish method for parameters for each group member
  */
-GM.prototype.publishPKg = function(g, gamma, f, P, n, Sg, callback){
+GM.prototype.publishPKg = function(receiveSgR, g, gamma, f, P, n, Sg, callback){
 	//Publish to Clients
 	for(var i = 0; i < this.clients.length; i++)
-		this.clients[i].receivePKg(g, gamma, f, P, n, Sg, function(){});
+		this.clients[i].receivePKg(this, g, gamma, f, P, n, Sg, function(){});
   callback();
 }
 
@@ -267,6 +275,10 @@ GM.prototype.sendPINs = function(client, PIN, ci, callback){
 /***************************************************
 /**               Receive functions              **/
 /**************************************************/
+GM.prototype.receiveSgR = function(SgR, callback) {
+	var plain = SgR.modPow(this.SgPrime[0], this.SgPrime[1]);
+	callback(plain);
+}
 
 /**************************************************/
 /**                   Export                     **/

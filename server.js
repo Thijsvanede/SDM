@@ -20,6 +20,7 @@ var LocalStrategy= require('passport-local').Strategy;
 var session      = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require("body-parser");
+var bigInt       = require('big-integer');
 
 var app          = express();
 
@@ -95,7 +96,17 @@ app.engine('html', require('ejs').renderFile);
 
 app.use(express.static(__dirname + '/public'));
 
-/** Initialising home page to index.html */
+
+var APIServer = require('./server/modules/Server.js').Server;
+var Sapi = new APIServer();
+var demoClient = require('./server/modules/DeEkteClient.js').Client;
+var client = new demoClient();
+var APIGM = require('./server/modules/GM.js').GM;
+var GMapi = new APIGM(Sapi, [client], 512);
+
+/**************************************************/
+/**                 Public routes                **/
+/**************************************************/
 app.get('/', function(req, res) {
   if(!req.user) {
     res.redirect('/login');
@@ -121,13 +132,22 @@ app.post('/register', function(req, res) {
   // find existing user
   database.find('users', {'username': req.body.username}, function(userdoc) {
     if(userdoc.length === 0) {
+      // determine encryption keys for user
+      // skipped for demo!
+      
       // insert new user
-      var user = {username: req.body.username, password: req.body.password};
+      var user = {
+        username: req.body.username,
+        password: req.body.password,
+        di: client.PIN.toString(),
+        ci: client.ci.toString()
+      };
       database.insert('users', user, {}, function() {
           // login and redirect to index
           passport.authenticate('local', {failureRedirect: '/login' }); //TODO check if this works
           res.redirect('/');
       });
+      
     } else {
       // return with error
       var alerts = [{'msg': 'Username already exists'}];
@@ -146,36 +166,63 @@ app.get('/logout', function(req, res) {
 /**************************************************/
 /**                  Server API                  **/
 /**************************************************/
-//var API = require('./server/modules/Henk.js').Henk;
-//var api = new API();
-
-
-app.get('/api/', function(req, res){
-  //TODO maybe documentation page about the API?
-});
-
-app.use('/api/sysset/', function(req, res) {
-  console.log(req);
-  console.log('body: ' + req.body);
-  console.log('a: ' + req.body.a);
-  res.send('done');
-  // get PK_s
-  // api.SysSet(PK_s)
-});
-app.post('/api/grpaut/', function(req, res) {
-  // get groupID, STC
-  // api.GrpAut(groupID, STC)
+// retreives the public parameters and sends these to the client.
+app.get('/api/sysset', function(req, res) {
+  if(!req.user) {
+    res.json({result: 'fail'});
+  } else {
+    var Sg2 = [
+      client.Sg[0].toString(),
+      client.Sg[1].toString()
+    ]
+    
+    var params = {
+      g: client.g.toString(),
+      gamma: client.gamma.toString(),
+      u: client.u.toString(),
+      P: client.P.toString(),
+      n: client.n.toString(),
+      Sg: Sg2
+    }
+    res.json({result: 'ok', params: params});
+  }
 })
+
 app.post('/api/datupl/', function(req, res) {
-  // get S_g(R), CSI_R
-  // api.DatUpl(S_g(R),CSI_R)
-})
+  if(!req.user) {
+    res.json({result: 'fail'});
+  } else {
+    var SgR = req.body.SgR;
+    var CSIR = req.body.CSIR;
+    Sapi.receiveSgR(SgR, CSIR, function() {
+      res.json({result: 'ok'});
+    });
+  }
+});
+
 app.post('/api/search/', function(req, res) {
-  // get trapdoor (L',l), PIN (d_i), secure code (s_i)
-  // api.MemChk(d_i,s_i,STC)
-  // -> api.SrhInd(T_L, CSI_R)
-  // -> return api.DatDwn()
-})
+  if(!req.user) {
+    res.json({result: 'fail'});
+  } else {
+    var C = bigInt(req.body.C);
+    var l = req.body.l;
+    var PIN = bigInt(req.user.di);
+    var ci = bigInt(req.user.ci);
+    
+    Sapi.receiveTrpdor(C, l, PIN, ci, function(docs) {
+      // data found, now decrypt at GM
+      console.log(docs);
+      
+      // TODO
+      var body = {
+        result: 'ok',
+        docs: docs
+      };
+      
+      res.json(body);
+    });
+  }
+});
 
 
 
@@ -191,9 +238,9 @@ server.listen(SERVER_PORT, SERVER_IP);
 /**************************************************/
 
 io.on('connection', function(socket){
-  console.log("a client connected");
+  //console.log("a client connected");
   socket.on('disconnect', function(){
-    console.log("A client disconnected");
+    //console.log("A client disconnected");
   })
 });
 
@@ -201,6 +248,7 @@ io.on('connection', function(socket){
 /**            Anirudh stuff                     **/
 /**************************************************/
 
+/*
 database.find("Users", {username:"adminn"},function(doc){
   console.log(doc);
 });
@@ -220,5 +268,5 @@ app.post('/login',function(req,res){
   
   res.redirect("/");
 });
-
+*/
 

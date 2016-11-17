@@ -9,12 +9,14 @@ var forge = require('node-forge');
 /**************************************************/
 /**                  Constructor                 **/
 /**************************************************/
-var Client = function(ID, server) {
+var Client = function(server, gm) {
 	// ID of current client.
-	this.ID = ID;
 	
   // Server instance.
   this.server = server;
+	
+	// GM instance
+	this.gm = gm;
   
   // PKg variables received from GM.
   this.g = null;
@@ -22,6 +24,9 @@ var Client = function(ID, server) {
   this.P = null;
   this.n = null;
   this.Sg = null;
+	
+	// Plaintext received from GM
+	var p = null;
 	
 	// PIN and ci variables received from GM.
 	this.PIN = null;
@@ -69,10 +74,10 @@ Client.prototype.IndGen = function(R, callback) {
   // calculate common secure index of R
   var rho = bigInt.randBetween(0, this.n);
   var CSIR = [];
-  CSIR[0] = rho.multiply(this.P); // mod n?
+  CSIR[0] = rho.multiply(this.P).mod(this.n); // mod n?
   for(var j = 0; j < R.length; j++) {
     var w = R[j];
-    CSIR[j+1] = rho.multiply(this.gamma).multiply(this.P).multiply(this.f(w)).mod(this.n);
+    CSIR[j+1] = rho.multiply(this.gamma).multiply(this.P).multiply(this.f(w)).mod(this.n); // mod n?
   }
   
   // Output CSIR
@@ -93,12 +98,10 @@ Client.prototype.DatUpl = function(callback) {
   // rsa encrypt using Sg
 	var SgR = [];
 	for(var j = 0; j < this.R.length; j++) {
-		SgR[j] = this.R[j].modPow(this.Sg, this.n);
+		SgR[j] = this.R[j].modPow(this.Sg[0], this.Sg[1]);
 	}
 	
-  this.sendSgR(SgR, this.CSIR, function(){});
-  
-	callback();
+  this.sendSgR(SgR, this.CSIR, callback);
 }
 
 /***************************************************
@@ -133,7 +136,7 @@ Client.prototype.Trpdor = function(L, l, callback) {
  * Send Sg(R) with CSIR to server.
  */
 Client.prototype.sendSgR = function(SgR, CSIR, callback) {
-  this.server.receiveSgR(this.ID, SgR, CSIR, function(){});
+  this.server.receiveSgR(SgR, CSIR, function(){});
   callback();
 }
 
@@ -147,9 +150,38 @@ Client.prototype.sendTrpdor = function(L, l, callback) {
 		C = computedC;
 		newl = computedl;
 	});
-	this.server.receiveTrpdor(this.ID, C, newl, this.PIN, this.ci , function(){});
-  callback();
+	this.server.receiveTrpdor(C, newl, this.PIN, this.ci , function(data){
+		if(data.empty)
+			console.log("NO DATA MATCHED");
+		callback(data);
+	});
 }
+
+/**
+* Receive collection of queried encrypted data from the server, or an empty array if there was no match
+*/
+Client.prototype.DatDcp = function (enc, callback){
+	this.gm.receiveSgR(enc, function(plain){
+		callback(plain);
+	});
+}
+
+Client.prototype.initQuery = function(L, l, callback){
+	var SgRcollection = null;
+	var tmp = this;
+	var plainText = [];
+	this.sendTrpdor(L, l, function(collection){
+		var SgRcollection = collection;	
+		for(var i = 0; i < SgRcollection.length; i++){
+			tmp.DatDcp(SgRcollection[i], function(plain){
+				console.log("Plaintext = " + plain);
+				plainText.push(plain);
+			});
+		}
+	});
+	callback(plainText);
+}
+
 
 /***************************************************
 /**               Receive functions              **/
@@ -166,7 +198,8 @@ Client.prototype.receivePINs = function(PIN, ci, callback){
 /**
  * Method to receive PKg from GM.
  */
-Client.prototype.receivePKg = function (g, gamma, f, P, n, Sg, callback){
+Client.prototype.receivePKg = function (gm, g, gamma, f, P, n, Sg, callback){
+	this.gm = gm;
   this.g = g;
   this.gamma = gamma;
   this.u = f.u;
