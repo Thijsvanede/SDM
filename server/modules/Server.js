@@ -28,7 +28,7 @@ var Server = function() {
 	this.q = null; //Will only be used within genElemM
 
 	// Secure test code from GM
-	this.STC = null;
+	this.STC = [];
 };
 
 /***************************************************
@@ -144,7 +144,7 @@ Server.prototype.SrhInd = function(C, l, CSIr) {
 /**
  * Method to receive PKs from GM.
  */
-Server.prototype.receivePKs = function(M, beta, n, callback) {
+Server.prototype.receivePKs = function(groupID, M, beta, n, callback) {
 	//Parameters for function M, can only be used within genElemM
 	this.k = M.k;
 	this.p = M.p;
@@ -158,21 +158,21 @@ Server.prototype.receivePKs = function(M, beta, n, callback) {
 /**
  * Method to receive STC from GM.
  */
-Server.prototype.receiveSTC = function(STC, callback) {
-	this.STC = STC;
+Server.prototype.receiveSTC = function(groupID, STC, callback) {
+	this.STC[groupID] = STC;
 	callback();
 }
 
 /**
  * Method to receive Sg(R) and CSIR from group member.
  */
-Server.prototype.receiveSgR = function(SgR, CSIR, callback) {
+Server.prototype.receiveSgR = function(groupID, SgR, CSIR, callback) {
 	var stringifiedSgR = [];
 	for(var i = 0; i < SgR.length; i++)
 		stringifiedSgR.push(SgR[i].toString());
 	
 	this.database.insert('encryptedData', {
-		'STC': this.STC, // (Joris) Speedhack part 1
+		'STC': this.STC[groupID], // (Joris) Speedhack part 1
 		'data': stringifiedSgR,
 		'CSIR': CSIR
 	}, {}, function() {});
@@ -184,8 +184,8 @@ Server.prototype.receiveSgR = function(SgR, CSIR, callback) {
  * TODO communicate correctly, currently we give the client as a parameter to be
  * able to send back the correct data.
  */
-Server.prototype.receiveTrpdor = function(C, l, PIN, ci, callback) {
-	this.DatDwn(PIN, ci, this.STC, C, l, function(data){
+Server.prototype.receiveTrpdor = function(groupID, C, l, PIN, ci, callback) {
+	this.DatDwn(PIN, ci, this.STC[groupID], C, l, function(data){
 		callback(data);
 	});
 }

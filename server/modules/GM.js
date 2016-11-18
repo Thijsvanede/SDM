@@ -9,7 +9,10 @@ var forge = require('node-forge');
 /**************************************************/
 /**                  Constructor                 **/
 /**************************************************/
-var GM = function(server, clients, k) {
+var GM = function(groupID, server, clients, k) {
+	//Group ID
+	this.groupID = groupID;
+	
   // Hosting server
   this.server = server;
   // Clients of group
@@ -93,11 +96,6 @@ GM.prototype.s = function(){
 /**************************************************/
 GM.prototype.SysSet = function(k, callback) {
   this.k = k;
-//   var key = new NodeRSA({b: k});
-//   components = key.exportKey('components');
-//   this.p = components.p;
-//   this.q = components.q;
-//   this.n = bigInt(components.n.toString('hex'), 16);
   
   //paillier
   var pkeys = paillier.generateKeys(k);
@@ -128,7 +126,7 @@ GM.prototype.SysSet = function(k, callback) {
 	this.gamma = gamma;
 	this.P = bigInt.randBetween(0, this.n); //TODO Make actual group generator
 	this.Sg = s1;
-	this.publishPKg(this.receiveSgR, this.g, this.gamma, {u: this.u}, this.P, this.n, this.Sg, function(){});
+	this.publishPKg(this.groupID, this.receiveSgR, this.g, this.gamma, {u: this.u}, this.P, this.n, this.Sg, function(){});
 	
 	// Publish PKs
 	this.beta = beta;
@@ -242,10 +240,10 @@ GM.prototype.GrpAuth = function(callback) {
 /**
  * Publish method for parameters for each group member
  */
-GM.prototype.publishPKg = function(receiveSgR, g, gamma, f, P, n, Sg, callback){
+GM.prototype.publishPKg = function(groupID, receiveSgR, g, gamma, f, P, n, Sg, callback){
 	//Publish to Clients
 	for(var i = 0; i < this.clients.length; i++)
-		this.clients[i].receivePKg(this, g, gamma, f, P, n, Sg, function(){});
+		this.clients[i].receivePKg(groupID, this, g, gamma, f, P, n, Sg, function(){});
   callback();
 }
 
@@ -253,7 +251,7 @@ GM.prototype.publishPKg = function(receiveSgR, g, gamma, f, P, n, Sg, callback){
  * Publish method for parameters for server
  */
 GM.prototype.publishPKs = function(M, beta, n, callback){
-	this.server.receivePKs(M, beta, n, function(){});
+	this.server.receivePKs(this.groupID, M, beta, n, function(){});
 	callback();
 }
 
@@ -261,7 +259,7 @@ GM.prototype.publishPKs = function(M, beta, n, callback){
  * Method to send STC to server.
  */
 GM.prototype.sendSTC = function(STC, callback){
-  this.server.receiveSTC(STC, function(){});
+  this.server.receiveSTC(this.groupID, STC, function(){});
   callback();
 }
 

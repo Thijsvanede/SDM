@@ -122,8 +122,8 @@ function parseResults(data) {
   $('#result').append('<h1>Search results</h1>');
   
   var table = $('<table></table>').addClass('table table-striped table-bordered table-hover');
-  var head = $('<thead><tr><th>#</th><th>Field1</th><th>Field2</th><th>Field3</th>' +
-              '<th>Field4</th><th>Field5</th></tr></thead>').addClass('thead-inverse').appendTo(table);
+  var head = $('<thead><tr><th>#</th><th>Field 1</th><th>Field 2</th><th>Field 3</th>' +
+              '<th>Field 4</th><th>Additional Data</th></tr></thead>').addClass('thead-inverse').appendTo(table);
   var tbody = $('<tbody></tbody>').appendTo(table);
   
   for(i = 0; i < docs.length; i++) {

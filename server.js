@@ -102,7 +102,7 @@ var Sapi = new APIServer();
 var demoClient = require('./server/modules/DeEkteClient.js').Client;
 var demclient = new demoClient(Sapi);
 var APIGM = require('./server/modules/GM.js').GM;
-var GMapi = new APIGM(Sapi, [demclient], 128);
+var GMapi = new APIGM(1, Sapi, [demclient], 128);
 GMapi.GrpAuth(function(){
   console.log("Group authenticated.");
 });
@@ -197,6 +197,9 @@ app.post('/api/datupl/', function(req, res) {
     var SgR = req.body.SgR;
     var CSIR = req.body.CSIR;
     
+    console.log('ENCRYPTED DATA RECEIVED:');
+    console.log(SgR);
+    
     // convert strings back to bigints
     for(var i = 0; i < SgR.length; i++) {
       SgR[i] = bigInt(SgR[i]);
@@ -205,7 +208,7 @@ app.post('/api/datupl/', function(req, res) {
       CSIR[i] = bigInt(CSIR[i]);
     }
     
-    Sapi.receiveSgR(SgR, CSIR, function() {
+    Sapi.receiveSgR(1, SgR, CSIR, function() {
       res.json({result: 'ok'});
     });
   }
@@ -225,9 +228,8 @@ app.post('/api/search/', function(req, res) {
     
     console.log("finding docs");
     
-    Sapi.receiveTrpdor(C, l, di, ci, function(docs) {
+    Sapi.receiveTrpdor(1, C, l, di, ci, function(docs) {
       // data found, now decrypt at GM
-      console.log('decrypting found data');
       var plaindata = [];
       
       // temporary hack because bugs (returned data is one big list)

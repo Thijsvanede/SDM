@@ -10,6 +10,9 @@ var forge = require('node-forge');
 /**                  Constructor                 **/
 /**************************************************/
 var Client = function(server) {
+	// Client group ID
+	this.groupID = null;
+	
 	// ID of current client.
 	
   // Server instance.
@@ -135,7 +138,7 @@ Client.prototype.Trpdor = function(L, l, callback) {
  * Send Sg(R) with CSIR to server.
  */
 Client.prototype.sendSgR = function(SgR, CSIR, callback) {
-  this.server.receiveSgR(SgR, CSIR, function(){});
+  this.server.receiveSgR(this.groupID, SgR, CSIR, function(){});
   callback();
 }
 
@@ -149,8 +152,8 @@ Client.prototype.sendTrpdor = function(L, l, callback) {
 		C = computedC;
 		newl = computedl;
 	});
-	this.server.receiveTrpdor(C, newl, this.PIN, this.ci , function(data){
-		if(data.empty)
+	this.server.receiveTrpdor(this.groupID, C, newl, this.PIN, this.ci , function(data){
+		if(data.length === 0)
 			console.log("NO DATA MATCHED");
 		callback(data);
 	});
@@ -195,7 +198,8 @@ Client.prototype.receivePINs = function(PIN, ci, callback){
 /**
  * Method to receive PKg from GM.
  */
-Client.prototype.receivePKg = function (gm, g, gamma, f, P, n, Sg, callback){
+Client.prototype.receivePKg = function (groupID, gm, g, gamma, f, P, n, Sg, callback){
+	this.groupID = groupID;
 	this.gm = gm;
   this.g = g;
   this.gamma = gamma;
