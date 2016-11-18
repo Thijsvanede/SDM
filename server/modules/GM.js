@@ -17,7 +17,8 @@ var GM = function(server, clients, k) {
   
   //Security parameters
   this.k = null;					// security parameter k
-  this.l = bigInt(2048);	// length of longest word
+  this.l = bigInt(512);	// length of longest word
+	// changed for demo
 	
 	//RSA variables
   this.n = null;					// n modulus of RSA

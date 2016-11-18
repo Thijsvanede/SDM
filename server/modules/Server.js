@@ -75,9 +75,11 @@ Server.prototype.inM = function(number, callback) {
 Server.prototype.DatDwn = function(di, ci, STC, C, l, callback) {
 	var data = null;
 	var tmp = this;
+	//console.log("DATDWN");
 	if (this.MemChk(di, ci, STC)) {
-
-		this.database.find('encryptedData', {}, function(documents) {
+		//console.log("memchk==true");
+		this.database.find('encryptedData', {'STC': STC}, function(documents) { // (Joris) speedhack part 2
+			console.log(documents.length+' documents gathered from db');
 			tmp.ProcessData(documents, C, l, function(data){
 				callback(data);
 			});
@@ -87,15 +89,21 @@ Server.prototype.DatDwn = function(di, ci, STC, C, l, callback) {
 
 Server.prototype.ProcessData = function(dataA, C, l, callback) {
 	var collection = [];
+	var myBigIntData = [];
+	var myBigIntData2 = [];
 	for (var i = 0; i < dataA.length; i++) {
+		myBigIntData2.push([]);
+		
 		if (this.SrhInd(C, l, dataA[i].CSIR)) {
 			var myData = dataA[i].data;
-			var myBigIntData = [];
+			// TODO this only outputs one document!
 			for(var j = 0; j < myData.length; j++){
+				myBigIntData2[i].push(bigInt(myData[j].toString()));
 				myBigIntData.push(bigInt(myData[j].toString()));
 			}
 		}
 	}
+	//console.log(myBigIntData2);
 	callback(myBigIntData);
 }
 
@@ -111,7 +119,7 @@ Server.prototype.MemChk = function(di, ci, STC) {
 	if (isInM && ci.modPow(di, this.n).equals(STC)) {
 		return true;
 	}
-	//sendToMember("ACCESS DENIED");
+	console.log("ACCESS DENIED");
 	//unauthorised user trying to query -> terminate the system
 	return false;
 }
@@ -164,6 +172,7 @@ Server.prototype.receiveSgR = function(SgR, CSIR, callback) {
 		stringifiedSgR.push(SgR[i].toString());
 	
 	this.database.insert('encryptedData', {
+		'STC': this.STC, // (Joris) Speedhack part 1
 		'data': stringifiedSgR,
 		'CSIR': CSIR
 	}, {}, function() {});

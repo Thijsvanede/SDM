@@ -9,14 +9,14 @@ var forge = require('node-forge');
 /**************************************************/
 /**                  Constructor                 **/
 /**************************************************/
-var Client = function(server, gm) {
+var Client = function(server) {
 	// ID of current client.
 	
   // Server instance.
   this.server = server;
 	
 	// GM instance
-	this.gm = gm;
+	this.gm = null;
   
   // PKg variables received from GM.
   this.g = null;
@@ -100,7 +100,6 @@ Client.prototype.DatUpl = function(callback) {
 	for(var j = 0; j < this.R.length; j++) {
 		SgR[j] = this.R[j].modPow(this.Sg[0], this.Sg[1]);
 	}
-	
   this.sendSgR(SgR, this.CSIR, callback);
 }
 
@@ -169,17 +168,15 @@ Client.prototype.DatDcp = function (enc, callback){
 Client.prototype.initQuery = function(L, l, callback){
 	var SgRcollection = null;
 	var tmp = this;
-	var plainText = [];
 	this.sendTrpdor(L, l, function(collection){
 		var SgRcollection = collection;	
 		for(var i = 0; i < SgRcollection.length; i++){
 			tmp.DatDcp(SgRcollection[i], function(plain){
-				console.log("Plaintext = " + plain);
-				plainText.push(plain);
+				console.log("plaintext " + i + " = " + plain);
 			});
 		}
 	});
-	callback(plainText);
+	
 }
 
 

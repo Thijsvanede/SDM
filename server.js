@@ -49,7 +49,7 @@ var database = new MongoDBCon();
 /**************************************************/
 /**          Passport initialisation             **/
 /**************************************************/
-passport.use(new LocalStrategy(function(username, password, callback) {;
+passport.use(new LocalStrategy(function(username, password, callback) {
   database.find('users', {'username': username}, function(userdoc) {
     if(userdoc.length === 0) {
       return callback(null, false, {message: "Username does not exist"});
@@ -100,9 +100,12 @@ app.use(express.static(__dirname + '/public'));
 var APIServer = require('./server/modules/Server.js').Server;
 var Sapi = new APIServer();
 var demoClient = require('./server/modules/DeEkteClient.js').Client;
-var client = new demoClient();
+var demclient = new demoClient(Sapi);
 var APIGM = require('./server/modules/GM.js').GM;
-var GMapi = new APIGM(Sapi, [client], 512);
+var GMapi = new APIGM(Sapi, [demclient], 128);
+GMapi.GrpAuth(function(){
+  console.log("Group authenticated.");
+});
 
 /**************************************************/
 /**                 Public routes                **/
@@ -138,9 +141,7 @@ app.post('/register', function(req, res) {
       // insert new user
       var user = {
         username: req.body.username,
-        password: req.body.password,
-        di: client.PIN.toString(),
-        ci: client.ci.toString()
+        password: req.body.password
       };
       database.insert('users', user, {}, function() {
           // login and redirect to index
@@ -172,51 +173,88 @@ app.get('/api/sysset', function(req, res) {
     res.json({result: 'fail'});
   } else {
     var Sg2 = [
-      client.Sg[0].toString(),
-      client.Sg[1].toString()
+      demclient.Sg[0].toString(),
+      demclient.Sg[1].toString()
     ]
     
     var params = {
-      g: client.g.toString(),
-      gamma: client.gamma.toString(),
-      u: client.u.toString(),
-      P: client.P.toString(),
-      n: client.n.toString(),
+      g: demclient.g.toString(),
+      gamma: demclient.gamma.toString(),
+      u: demclient.u.toString(),
+      P: demclient.P.toString(),
+      n: demclient.n.toString(),
       Sg: Sg2
     }
     res.json({result: 'ok', params: params});
   }
 })
 
+// upload encrypted data from the client
 app.post('/api/datupl/', function(req, res) {
   if(!req.user) {
     res.json({result: 'fail'});
   } else {
     var SgR = req.body.SgR;
     var CSIR = req.body.CSIR;
+    
+    // convert strings back to bigints
+    for(var i = 0; i < SgR.length; i++) {
+      SgR[i] = bigInt(SgR[i]);
+    }
+    for(var i = 0; i < CSIR.length; i++) {
+      CSIR[i] = bigInt(CSIR[i]);
+    }
+    
     Sapi.receiveSgR(SgR, CSIR, function() {
       res.json({result: 'ok'});
     });
   }
 });
 
+// search in encrypted data
 app.post('/api/search/', function(req, res) {
   if(!req.user) {
     res.json({result: 'fail'});
   } else {
     var C = bigInt(req.body.C);
     var l = req.body.l;
-    var PIN = bigInt(req.user.di);
-    var ci = bigInt(req.user.ci);
     
-    Sapi.receiveTrpdor(C, l, PIN, ci, function(docs) {
+    // get from democlient for the demonstration
+    var di = demclient.PIN;
+    var ci = demclient.ci;
+    
+    console.log("finding docs");
+    
+    Sapi.receiveTrpdor(C, l, di, ci, function(docs) {
       // data found, now decrypt at GM
-      console.log(docs);
+      console.log('decrypting found data');
+      var plaindata = [];
       
-      // TODO
+      // temporary hack because bugs (returned data is one big list)
+      var tempdocs = [];
+      for(var d = 0; d < docs.length; d += 5) {
+        var onedoc = [docs[d],docs[d+1],docs[d+2],docs[d+3],docs[d+4]];
+        tempdocs.push(onedoc);
+      }
+      docs = tempdocs;
+      
+      for(var c = 0; c < docs.length; c++) {
+        var doc = docs[c];
+        var plaindoc = [];
+        for(var d = 0; d < doc.length; d++) {
+          var docword = doc[d];
+          GMapi.receiveSgR(docword, function(plain) {
+            plaindoc.push(plain.toString());
+          });
+        }
+        plaindata.push(plaindoc);
+      }
+      
+      console.log(plaindata);
+      
       var body = {
         result: 'ok',
-        docs: docs
+        docs: plaindata
       };
       
       res.json(body);

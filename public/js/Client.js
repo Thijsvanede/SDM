@@ -93,7 +93,9 @@ Client.prototype.DatUpl = function(callback) {
 		SgR[j] = this.R[j].modPow(this.Sg[0], this.Sg[1]);
 	}
 	
-  this.sendSgR(SgR, this.CSIR, callback);
+  //this.sendSgR(SgR, this.CSIR, callback);
+  this.SgR = SgR;
+  callback();
 }
 
 /***************************************************

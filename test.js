@@ -13,29 +13,38 @@ var L = [bigInt(20)];
 var l = [3]; //locations start at index 1
 
 var myServer = new Server();
-var myClients = [new Client(myServer), new Client(myServer)];
-var myGM = new GM(myServer, myClients, 512);
+var client1 = new Client(myServer);
+var client2 = new Client(myServer);
+var client3 = new Client(myServer);
+var myClients1 = [client1, client3];
+var myClients2 = [client2, client3];
+var myGM1 = new GM(myServer, myClients1, 512);
+var myGM2 = new GM(myServer, myClients2, 512);
 
-myGM.GrpAuth(function(){
+myGM1.GrpAuth(function(){
   console.log("Group authenticated.");
 });
 
-myClients[0].UploadData(R, function(){
+myClients1[0].UploadData(R, function(){
   console.log("Data uploaded.");
 });
 
-myClients[0].UploadData(R2, function(){
+myClients1[0].UploadData(R2, function(){
   console.log("Data uploaded.");
 });
 
-myClients[0].UploadData(R3, function(){
+myClients1[0].UploadData(R3, function(){
   console.log("Data uploaded.");
 });
                         
-myClients[0].initQuery(L, l, function(){
+myClients1[0].initQuery(L, l, function(){
   console.log("Trapdoor sent.");
 });   
 
-myClients[1].initQuery(L, l, function(){
+myGM2.GrpAuth(function(){
+  console.log("Group authenticated.");
+});
+
+myClients2[0].initQuery(L, l, function(){
   console.log("Trapdoor sent.");
 });   
